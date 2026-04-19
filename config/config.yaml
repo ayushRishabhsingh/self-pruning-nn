@@ -1,0 +1,66 @@
+# ============================================================================
+# Self-Pruning Neural Network Configuration
+# ============================================================================
+
+# Reproducibility
+seed: 42
+
+# Dataset
+dataset:
+  name: "CIFAR-10"
+  root: "./data"
+  num_workers: 2
+  pin_memory: true
+
+# Model Architecture
+model:
+  input_dim: 3072        # 32x32x3 flattened
+  hidden_dims: [1024, 512, 256]
+  output_dim: 10
+  activation: "relu"
+
+# Training
+training:
+  epochs: 30
+  batch_size: 128
+  learning_rate: 0.001
+  weight_decay: 0.0
+  optimizer: "adam"
+
+# Sparsity / Pruning
+pruning:
+  gate_threshold: 0.01   # Gates below this are considered "pruned"
+
+# Early Stopping
+early_stopping:
+  enabled: true
+  patience: 7
+  min_delta: 0.001
+  monitor: "val_loss"
+
+# Checkpointing
+checkpoint:
+  dir: "./checkpoints"
+  save_best: true
+  save_every: 5          # Save every N epochs (0 = disabled)
+
+# Logging
+logging:
+  level: "INFO"
+  tensorboard: true
+  tensorboard_dir: "./runs"
+  log_interval: 50       # Log every N batches
+
+# Experiments — each entry runs a separate training run
+experiments:
+  - name: "low_lambda"
+    lambda_sparse: 0.00001    # 1e-5
+  - name: "medium_lambda"
+    lambda_sparse: 0.0001     # 1e-4
+  - name: "high_lambda"
+    lambda_sparse: 0.001      # 1e-3
+
+# Report
+report:
+  output_dir: "./reports"
+  filename: "experiment_report.md"
